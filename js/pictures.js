@@ -12,12 +12,6 @@ var comments = [
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
-var photoTemplate = document.querySelector('#picture-template').content;
-var pictureList = document.querySelector('.pictures');
-// Рандом;
-var getRandom = function (min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
 
 var i = 0;
 var j = 0;
@@ -25,42 +19,72 @@ var minRandomCommentsLength = 1;
 var maxRandomCommentsLength = 2;
 var minRandomUserComment = 0;
 var maxRandomUserComment = comments.length - 1;
-// Создание массива фото;
-for (i = 0; i < QUANITY_PHOTO; i++) {
-  var randomComments = [];
-  randomComments.length = getRandom(minRandomCommentsLength, maxRandomCommentsLength);
-  for (j = 0; j < randomComments.length; j++) {
-    var randomUserComment = getRandom(minRandomUserComment, maxRandomUserComment);
-    randomComments[j] = comments[randomUserComment];
-  }
 
-  var numberPhoto = i + 1;
-  photosUsers[i] =
-    {
-      'url': 'photos/' + numberPhoto + '.jpg',
-      'likes': getRandom(MIN_LIKES, MAX_LIKES),
-      'comments': randomComments.length
-    };
-}
+var photoTemplate = document.querySelector('#picture-template').content;
+var pictureList = document.querySelector('.pictures');
+var gallery = document.querySelector('.gallery-overlay');
+
+
+// Рандом;
+
+var getRandom = function (min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+// Создание массива фото;
+
+var getPhotosUsers = function () {
+  for (i = 0; i < QUANITY_PHOTO; i++) {
+    var randomComments = [];
+    randomComments.length = getRandom(minRandomCommentsLength, maxRandomCommentsLength);
+    for (j = 0; j < randomComments.length; j++) {
+      var randomUserComment = getRandom(minRandomUserComment, maxRandomUserComment);
+      randomComments[j] = comments[randomUserComment];
+    }
+
+    var numberPhoto = i + 1;
+    photosUsers[i] =
+      {
+        'url': 'photos/' + numberPhoto + '.jpg',
+        'likes': getRandom(MIN_LIKES, MAX_LIKES),
+        'comments': randomComments
+      };
+  }
+};
 
 // Функция создания DOM-элемента;
-var makePicture = function (photoUser) {
-  var photoElement = photoTemplate.cloneNode(true);
-  photoElement.querySelector('img').src = photoUser.url;
-  photoElement.querySelector('.picture-likes').textContent = photoUser.likes;
-  photoElement.querySelector('.picture-comments').textContent = photoUser.comments;
-  return photoElement;
-};
-// Создание фрагмета;
-var fragment = document.createDocumentFragment();
-for (i = 0; i < QUANITY_PHOTO; i++) {
-  fragment.appendChild(makePicture(photosUsers[i]));
-}
-// Вставка фрагмента;
-pictureList.appendChild(fragment);
 
-var gallery = document.querySelector('.gallery-overlay');
-gallery.classList.remove('hidden');
-gallery.querySelector('.gallery-overlay-image').src = photosUsers[0].url;
-gallery.querySelector('.likes-count').textContent = photosUsers[0].likes;
-gallery.querySelector('.comments-count').textContent = photosUsers[0].comments;
+var createPicture = function (createElement, source, pictureLikes, pictureComments, photoUser) {
+  createElement.querySelector(source).src = photoUser.url;
+  createElement.querySelector(pictureLikes).textContent = photoUser.likes;
+  createElement.querySelector(pictureComments).textContent = photoUser.comments.length;
+};
+var getPicture = function (source, pictureLikes, pictureComments, photoUser) {
+  var createElement = photoTemplate.cloneNode(true);
+  createPicture(createElement, source, pictureLikes, pictureComments, photoUser);
+  return createElement;
+};
+
+// Создание фрагмета;
+
+var getFragment = function () {
+  var fragment = document.createDocumentFragment();
+  for (i = 0; i < QUANITY_PHOTO; i++) {
+    fragment.appendChild(getPicture('img', '.picture-likes', '.picture-comments', photosUsers[i]));
+  }
+
+  pictureList.appendChild(fragment);
+};
+
+// Создание галереи
+
+var getGallery = function (source, pictureLikes, pictureComments, photoUser) {
+  gallery.classList.remove('hidden');
+  var createElement = document.querySelector('.gallery-overlay');
+  createPicture(createElement, source, pictureLikes, pictureComments, photoUser);
+  return createElement;
+};
+
+getPhotosUsers();
+getFragment();
+getGallery('.gallery-overlay-image', '.likes-count', '.comments-count', photosUsers[0]);
