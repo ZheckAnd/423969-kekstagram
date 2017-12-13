@@ -79,7 +79,7 @@ var getFragment = function () {
 // Создание галереи
 
 var getGallery = function (source, pictureLikes, pictureComments, photoUser) {
-  gallery.classList.remove('hidden');
+  // gallery.classList.remove('hidden');
   var createElement = document.querySelector('.gallery-overlay');
   createPicture(createElement, source, pictureLikes, pictureComments, photoUser);
   return createElement;
@@ -88,3 +88,45 @@ var getGallery = function (source, pictureLikes, pictureComments, photoUser) {
 getPhotosUsers();
 getFragment();
 getGallery('.gallery-overlay-image', '.likes-count', '.comments-count', photosUsers[0]);
+
+// Новое задание;
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
+var onPressEsc = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    onGalleryCloseClick();
+  }
+};
+var picture = document.querySelectorAll('.picture');
+var galleryClose = gallery.querySelector('.gallery-overlay-close');
+
+var onPressEnterClose = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onGalleryCloseClick();
+  }
+};
+
+var onPictureClick = function () {
+  gallery.classList.remove('hidden');
+  document.addEventListener('keydown', onPressEsc);
+
+  galleryClose.addEventListener('click', onGalleryCloseClick);
+
+  galleryClose.addEventListener('keydown', onPressEnterClose);
+
+};
+
+var onGalleryCloseClick = function () {
+  gallery.classList.add('hidden');
+  galleryClose.removeEventListener('click', onGalleryCloseClick);
+  galleryClose.removeEventListener('keydown', onPressEnterClose);
+
+};
+
+picture.addEventListener('click', onPictureClick);
+picture.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onPictureClick();
+  }
+});
