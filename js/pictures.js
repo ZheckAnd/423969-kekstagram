@@ -87,9 +87,9 @@ var getGallery = function (source, pictureLikes, pictureComments, photoUser) {
 
 getPhotosUsers();
 getFragment();
-getGallery('.gallery-overlay-image', '.likes-count', '.comments-count', photosUsers[0]);
 
 // Новое задание;
+var clickedPicture;
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
@@ -98,7 +98,7 @@ var onPressEsc = function (evt) {
     onGalleryCloseClick();
   }
 };
-var picture = document.querySelectorAll('.picture');
+var picture = document.querySelector('.picture'); // вот так работает а если выбрать все селектора то нет.
 var galleryClose = gallery.querySelector('.gallery-overlay-close');
 
 var onPressEnterClose = function (evt) {
@@ -110,11 +110,11 @@ var onPressEnterClose = function (evt) {
 var onPictureClick = function () {
   gallery.classList.remove('hidden');
   document.addEventListener('keydown', onPressEsc);
-
   galleryClose.addEventListener('click', onGalleryCloseClick);
-
   galleryClose.addEventListener('keydown', onPressEnterClose);
-
+  event.preventDefault();
+  clickedPicture = event.currentTarget;
+  console.log(clickedPicture);
 };
 
 var onGalleryCloseClick = function () {
@@ -123,10 +123,10 @@ var onGalleryCloseClick = function () {
   galleryClose.removeEventListener('keydown', onPressEnterClose);
 
 };
-
 picture.addEventListener('click', onPictureClick);
 picture.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
     onPictureClick();
   }
 });
+getGallery('.gallery-overlay-image', '.likes-count', '.comments-count', photosUsers[0]);
