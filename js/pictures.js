@@ -78,34 +78,26 @@ var getFragment = function () {
 
 // Создание галереи
 
-var getGallery = function (source, pictureLikes, pictureComments, photoUser) {
-  // gallery.classList.remove('hidden');
-  var createElement = document.querySelector('.gallery-overlay');
-  createPicture(createElement, source, pictureLikes, pictureComments, photoUser);
-  return createElement;
+var getGallery = function (clickedPicture) {
+  var galleryOverlay = document.querySelector('.gallery-overlay');
+  galleryOverlay.querySelector('.gallery-overlay-image').src = clickedPicture.querySelector('img').src;
+  galleryOverlay.querySelector('.likes-count').textContent = clickedPicture.querySelector('.picture-likes').textContent;
+  galleryOverlay.querySelector('.comments-count').textContent = clickedPicture.querySelector('.picture-comments').textContent;
+  return galleryOverlay;
 };
 
 getPhotosUsers();
 getFragment();
 
-// Новое задание;
-var clickedPicture;
+// Новое задание. События;
+
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
-
-var onPressEsc = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    onGalleryCloseClick();
-  }
-};
-var picture = document.querySelector('.picture'); // вот так работает а если выбрать все селектора то нет.
+var clickedPicture;
+var pictures = document.querySelectorAll('.picture');
 var galleryClose = gallery.querySelector('.gallery-overlay-close');
 
-var onPressEnterClose = function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    onGalleryCloseClick();
-  }
-};
+// Добавление событий при открытии галереи;
 
 var onPictureClick = function () {
   gallery.classList.remove('hidden');
@@ -114,19 +106,41 @@ var onPictureClick = function () {
   galleryClose.addEventListener('keydown', onPressEnterClose);
   event.preventDefault();
   clickedPicture = event.currentTarget;
-  console.log(clickedPicture);
+  getGallery(clickedPicture);
 };
+
+var onPressEsc = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    onGalleryCloseClick();
+  }
+};
+
+var onPressEnterClose = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onGalleryCloseClick();
+  }
+};
+
+// Удаление событий при закрытии галереи;
 
 var onGalleryCloseClick = function () {
   gallery.classList.add('hidden');
+  document.removeEventListener('keydown', onPressEsc);
   galleryClose.removeEventListener('click', onGalleryCloseClick);
   galleryClose.removeEventListener('keydown', onPressEnterClose);
-
 };
-picture.addEventListener('click', onPictureClick);
-picture.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    onPictureClick();
+
+// Добавление слушателей на фото;
+
+var getPictureListener = function () {
+  for (i = 0; i < pictures.length; i++) {
+    pictures[i].addEventListener('click', onPictureClick);
+    pictures[i].addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        onPictureClick();
+      }
+    });
   }
-});
-getGallery('.gallery-overlay-image', '.likes-count', '.comments-count', photosUsers[0]);
+};
+
+getPictureListener();
